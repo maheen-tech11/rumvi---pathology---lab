@@ -26,7 +26,7 @@ document.getElementById("bookingForm").addEventListener("submit", async function
         "-" +
         Date.now().toString().slice(-6);
 
-    const { error } = await supabaseClient
+        const { error } = await supabaseClient
         .from("bookings")
         .insert([
             {
@@ -41,11 +41,11 @@ document.getElementById("bookingForm").addEventListener("submit", async function
             }
         ]);
 
-    if (error) {
-        console.error(error);
-        alert("Booking save nahi ho paayi. Please try again.");
-        return;
-    }
+   if (error) {
+    console.error("Booking save error:", error);
+    alert("Booking save nahi ho paayi: " + error.message);
+    return;
+}
 
     alert(
         "Booking successfully submitted!\\n\\n" +
@@ -55,21 +55,51 @@ document.getElementById("bookingForm").addEventListener("submit", async function
     this.reset();
 
 });
-document.querySelector("#reports .report-box button").addEventListener("click", function() {
+document.getElementById("searchReportBtn").addEventListener("click", async function () {
+    const patientName = document.getElementById("onlinePatientId").value.trim();
+    const mobile = document.getElementById("onlineMobile").value.trim();
+    const message = document.getElementById("reportSearchMessage");
 
-    const reportId = document.querySelector(
-        '#reports input[placeholder="Patient ID / Report ID"]'
-    ).value;
+    message.textContent = "";
 
-    const mobile = document.querySelector(
-        '#reports input[placeholder="Mobile Number"]'
-    ).value;
-
-    if (reportId === "" || mobile === "") {
-        alert("Please enter Patient ID / Report ID and Mobile Number.");
+    if (!patientName || !mobile) {
+        message.textContent = "Please enter your patient name and registered mobile number.";
         return;
     }
 
-    alert("Report search feature is ready. Online report system will be connected later.");
+    this.disabled = true;
+    this.textContent = "Searching...";
+    try {
+        const response = await fetch(
+            "https://swvnsamzoasocqhyrunu.supabase.co/functions/v1/verify-patient-reports",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY
+                },
+                body: JSON.stringify({ patientName, mobile })
+            }
+        );
 
+        const data = await response.json();
+
+        if (!response.ok || !data.signedUrl) {
+            message.textContent = "Report nahi mili. Patient name aur registered mobile number check karein.";
+            return;
+        }
+
+        message.textContent = "Report verified. Opening report...";
+       const link = document.createElement("a");
+link.href = data.signedUrl;
+link.target = "_blank";
+link.rel = "noopener noreferrer";
+link.click();
+   } catch (error) {
+    console.error("Report search error:", error);
+    message.textContent = "Error: " + error.message;
+   } finally {
+        this.disabled = false;
+        this.textContent = "Search Report";
+    }
 });

@@ -13,7 +13,7 @@
     <div id="welcomeScreen">
     <div class="welcome-content">
         <div class="welcome-icon">
-    <img src="rumvi-logo.jpg" alt="RUMVI Pathology Lab Logo">
+    <img src="images/Lab%20icon.jpg" alt="RUMVI Pathology Lab Logo">
 </div>
         <h1>RUMVI</h1>
         <h2>Pathology Lab</h2>
@@ -92,8 +92,10 @@
 
 </section>
 
-    <section id="services" class="section">
-
+<div class="section-image">
+    <img src="images/lab-services.png..jpg" alt="Professional pathology laboratory">
+</div>
+<section id="services" class="section">
     <h2>Our Services</h2>
 
     <p class="services-note">
@@ -139,6 +141,9 @@
 
 </section>
 <section class="section test-list">
+    <div class="section-image">
+    <img src="images/lab-test.png" alt="Diagnostic tests at RUMVI Pathology Lab">
+</div>
 
     <h2>Our Diagnostic Tests</h2>
 
@@ -205,8 +210,12 @@
 
 </section>
 
+
 <section class="section why-us">
 
+   <div class="section-image">
+    <img src="images/why-choose-us.png" alt="Modern pathology lab and patient care">
+</div>
     <h2>Why Choose Us?</h2>
 
     <p class="why-intro">
@@ -242,7 +251,36 @@
     </div>
 
 </section>   
+<section id="reports" class="section">
+    <h2>Online Reports</h2>
+    <p>Enter your registered patient name and mobile number to access your report.</p>
+    <div class="report-box">
+        <input
+            type="text"
+            id="onlinePatientId"
+            placeholder="Patient Name"
+            autocomplete="off"
+            required
+        >
+
+        <input
+            type="tel"
+            id="onlineMobile"
+            placeholder="Registered Mobile Number"
+            inputmode="numeric"
+            autocomplete="tel"
+            required
+        >
+
+        <button type="button" id="searchReportBtn">Search Report</button>
+
+        <p id="reportSearchMessage" role="status" aria-live="polite"></p>
+    </div>
+</section>
 <section id="about" class="section about-us">
+<div class="section-image">
+    <img src="images/about-rumvi.png" alt="About RUMVI Pathology Lab">
+</div>
 
     <h2>About RUMVI Pathology Lab</h2>
 
@@ -276,6 +314,9 @@
     </div>
 
 </section>
+<div class="section-image">
+    <img src="images/our-team.png" alt="RUMVI Pathology Lab Team">
+</div>
 <!-- Our Team -->
 
 <section class="section team-section">
@@ -321,49 +362,7 @@
     </div>
 
 </section>
-<section id="reports" class="section reports">
 
-    <h2>Online Reports</h2>
-
-    <p class="reports-intro">
-        Access your laboratory reports quickly and conveniently.
-    </p>
-
-    <div class="report-box">
-
-        <div class="report-icon">📄</div>
-
-        <h3>Download Your Report</h3>
-
-        <p>
-            Enter your report details to access your laboratory report online.
-        </p>
-
-        <div class="report-inputs">
-
-            <input
-                type="text"
-                placeholder="Patient ID / Report ID"
-            >
-
-            <input
-                type="text"
-                placeholder="Mobile Number"
-            >
-
-        </div>
-
-        <button type="button">
-            Search Report
-        </button>
-
-        <small>
-            Your report information is kept private and secure.
-        </small>
-
-    </div>
-
-</section>
 
     <section id="booking" class="section booking">
 
@@ -597,7 +596,11 @@
             <p>📞 8770803057</p>
             <p>💬 7770803057</p>
             <p>📍 Seoni, Madhya Pradesh</p>
+            <div class="footer-admin">
+    <a href="admin/login.html">Admin Login</a>
+</div>
         </div>
+
 
     </div>
 

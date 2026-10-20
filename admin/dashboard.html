@@ -216,14 +216,18 @@
     <br><br>
 
     <label>Patient ID</label>
-    <input type="text" id="patientId" placeholder="Patient ID">
+<input type="text" id="patientId" placeholder="Patient ID">
 
-    <br><br>
+<br><br>
 
-    <label>Report Number</label>
-    <input type="text" id="reportNumber" placeholder="Report Number">
+<label>Patient Mobile Number</label>
+<input type="tel" id="patientMobile" placeholder="10-digit mobile number">
 
-    <br><br>
+<br><br>
+
+<label>Report Number</label>
+<input type="text" id="reportNumber" placeholder="Report Number">
+<br><br>
 
     <label>Report Date</label>
     <input type="date" id="reportDate">
@@ -237,9 +241,17 @@
 
     <label>Sample Type</label>
     <input type="text" id="sampleType" placeholder="e.g. Blood">
+    <br><br>
+
+<label>Upload Patient Report (PDF)</label>
+<input type="file" id="reportFile" accept="application/pdf">
+
+<br><br>
     <hr style="margin:25px 0;">
 
-<h3>Test Details</h3>
+
+
+    <h3>Test Details</h3>
 
 <label>Test Name</label>
 <input type="text" id="testName" placeholder="e.g. CBC">
@@ -266,7 +278,20 @@ placeholder="Enter lab-approved notes"></textarea>
 </div>
 </div>
 </div>
+<section id="savedReportsSection" style="margin-top: 35px;">
+    <h3>Saved Reports</h3>
 
+    <input
+        type="text"
+        id="reportSearch"
+        placeholder="Search by Patient Name or Mobile Number"
+        style="padding: 10px; width: 100%; max-width: 400px; margin-bottom: 15px;"
+    >
+
+    <div id="savedReportsList">
+        <p>Saved reports will appear here.</p>
+    </div>
+</section>
         <a href="login.html" class="logout">Logout</a>
 
     </div>

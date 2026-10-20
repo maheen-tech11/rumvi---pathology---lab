@@ -146,6 +146,81 @@ function updateStats(bookings) {
 }
 
 // Start dashboard
+// Load saved patient reports
+async function loadSavedReports(searchText = "") {
+    const reportsList = document.getElementById("savedReportsList");
+
+    reportsList.textContent = "Loading reports...";
+
+    const { data, error } = await supabaseClient
+        .from("reports")
+        .select("patient_name, patient_id, mobile, report_number, test_name, report_date, file_path")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Reports loading error:", error);
+        reportsList.textContent = "Unable to load reports.";
+        return;
+    }
+
+    const search = searchText.toLowerCase();
+
+   const filteredReports = (data || []).filter(report =>
+    (report.patient_name || "").toLowerCase().includes(search) ||
+    (report.mobile || "").toLowerCase().includes(search)
+);
+    reportsList.replaceChildren();
+
+    if (filteredReports.length === 0) {
+        reportsList.textContent = "No matching reports found.";
+        return;
+    }
+
+    filteredReports.forEach(report => {
+        const card = document.createElement("div");
+        card.style.cssText =
+            "border:1px solid #ddd; padding:15px; margin:10px 0; border-radius:8px;";
+
+        const details = [
+            ["Patient Name", report.patient_name],
+            ["Patient ID", report.patient_id],
+            ["Report Number", report.report_number],
+            ["Test", report.test_name],
+            ["Date", report.report_date || "Not specified"]
+        ];
+
+        details.forEach(([label, value]) => {
+            const p = document.createElement("p");
+            p.textContent = `${label}: ${value}`;
+            card.appendChild(p);
+        });
+
+       if (report.file_path) {
+    const pdfButton = document.createElement("button");
+    pdfButton.textContent = "View PDF";
+
+    pdfButton.addEventListener("click", async function () {
+        const { data, error } = await supabaseClient.storage
+            .from("patient-reports")
+            .createSignedUrl(report.file_path, 60);
+
+        if (error) {
+            console.error("PDF opening error:", error);
+            alert("PDF open nahi hui. Please try again.");
+            return;
+        }
+
+        window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    });
+
+    card.appendChild(pdfButton);
+}
+        reportsList.appendChild(card);
+    });
+}
+document.getElementById("reportSearch").addEventListener("input", function () {
+    loadSavedReports(this.value.trim());
+});
 async function startDashboard() {
 
     const loggedIn = await checkLogin();
@@ -155,9 +230,9 @@ async function startDashboard() {
     }
 
     await loadBookings();
+    await loadSavedReports();
 
 }
-
 // Preview patient report
 document.getElementById("previewReportBtn").addEventListener("click", function() {
     const name = document.getElementById("patientName").value;
@@ -191,47 +266,98 @@ document.getElementById("previewReportBtn").addEventListener("click", function()
 
     preview.style.display = "block";
 });
-// Save patient report
+// Save patient report and upload PDF
 document.getElementById("saveReportBtn").addEventListener("click", async function () {
     const patientName = document.getElementById("patientName").value.trim();
     const patientId = document.getElementById("patientId").value.trim();
     const reportNumber = document.getElementById("reportNumber").value.trim();
     const testName = document.getElementById("testName").value.trim();
+    const mobile = document.getElementById("patientMobile").value.trim();
+    const fileInput = document.getElementById("reportFile");
+    const file = fileInput.files[0];
 
-    if (!patientName || !patientId || !reportNumber || !testName) {
-        alert("Please fill Patient Name, Patient ID, Report Number and Test Name.");
+    if (!patientName || !patientId || !reportNumber || !testName || !mobile) {
+        alert("Please fill Patient Name, Patient ID, Mobile Number, Report Number and Test Name.");
         return;
     }
 
-    const report = {
-        patient_id: patientId,
-        patient_name: patientName,
-        report_number: reportNumber,
-        report_date: document.getElementById("reportDate").value || null,
-        age: document.getElementById("patientAge").value || null,
-        gender: document.getElementById("patientGender").value || null,
-        referring_doctor: document.getElementById("referringDoctor").value.trim() || null,
-        sample_type: document.getElementById("sampleType").value.trim() || null,
-        test_name: testName,
-        test_results: document.getElementById("testResults").value.trim() || null,
-        report_notes: document.getElementById("reportNotes").value.trim() || null
-    };
+    if (!file) {
+        alert("Please select the patient's PDF report.");
+        return;
+    }
+
+    if (file.type !== "application/pdf") {
+        alert("Please upload a PDF file only.");
+        return;
+    }
 
     const saveButton = document.getElementById("saveReportBtn");
     saveButton.disabled = true;
 
-    const { error } = await supabaseClient
-        .from("reports")
-        .insert([report]);
+    let uploadedPath = null;
 
-    saveButton.disabled = false;
+    try {
+        const safeId = patientId.replace(/[^a-zA-Z0-9_-]/g, "_");
+       const uniqueName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    uploadedPath = `${safeId}/${uniqueName}`;
+        const { error: uploadError } = await supabaseClient.storage
+            .from("patient-reports")
+            .upload(uploadedPath, file, {
+                contentType: "application/pdf",
+                upsert: false
+            });
 
-    if (error) {
-        console.error("Report save error:", error);
-        alert("Report save nahi hui. Please check the details and try again.");
-        return;
+        if (uploadError) {
+            throw uploadError;
+        }
+
+        const report = {
+            patient_id: patientId,
+            mobile: mobile,
+            patient_name: patientName,
+            report_number: reportNumber,
+            report_date: document.getElementById("reportDate").value || null,
+            age: document.getElementById("patientAge").value || null,
+            gender: document.getElementById("patientGender").value || null,
+            referring_doctor: document.getElementById("referringDoctor").value.trim() || null,
+            sample_type: document.getElementById("sampleType").value.trim() || null,
+            test_name: testName,
+            test_results: document.getElementById("testResults").value.trim() || null,
+            report_notes: document.getElementById("reportNotes").value.trim() || null,
+            file_path: uploadedPath
+        };
+
+        const { error: saveError } = await supabaseClient
+            .from("reports")
+            .insert([report]);
+
+        if (saveError) {
+            await supabaseClient.storage
+                .from("patient-reports")
+                .remove([uploadedPath]);
+            uploadedPath = null;
+            throw saveError;
+        }
+
+        alert("Patient details and PDF uploaded successfully!");
+        await loadSavedReports(
+    document.getElementById("reportSearch").value.trim()
+);
+        fileInput.value = "";
+        document.getElementById("patientName").value = "";
+        document.getElementById("patientId").value = "";
+        document.getElementById("patientMobile").value = "";
+        document.getElementById("reportNumber").value = "";
+        document.getElementById("testName").value = "";
+        document.getElementById("testResults").value = "";
+        document.getElementById("reportNotes").value = "";
+
+    } catch (error) {
+        console.error("Report upload/save error:", error);
+        alert("Report save nahi hui. Please check the Storage and reports permissions, then try again.");
+    } finally {
+        saveButton.disabled = false;
     }
-
-    alert("Report successfully saved!");
 });
+
 startDashboard();
