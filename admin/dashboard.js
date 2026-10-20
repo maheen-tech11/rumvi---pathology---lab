@@ -91,7 +91,11 @@ async function loadBookings() {
         Update Status
     </button>
 `;
-        bookingsList.appendChild(bookingCard);
+       bookingsList.appendChild(bookingCard);
+
+const divider = document.createElement("hr");
+divider.style.cssText = "border: 0; border-top: 1px solid #ccc; margin: 20px 0;";
+bookingCard.appendChild(divider);
         const updateButton = bookingCard.querySelector(".update-booking-btn");
 
 updateButton.addEventListener("click", async function () {
