@@ -60,7 +60,13 @@ nav a:hover {
 .hero-text {
     max-width: 650px;
 }
-
+.hero-logo img {
+    width: 280px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
 .tagline {
     color: #087ea4;
     font-weight: bold;
@@ -1079,4 +1085,16 @@ footer {
 .footer-admin a:hover {
     color: #333333;
     text-decoration: underline;
+}
+.package-prices {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.package-prices img {
+    display: block;
+    max-width: 100%;
+    width: 600px;
+    height: auto;
+    margin: 20px auto;
 }
