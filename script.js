@@ -60,7 +60,7 @@ document.getElementById("searchReportBtn").addEventListener("click", async funct
     const mobile = document.getElementById("onlineMobile").value.trim();
     const message = document.getElementById("reportSearchMessage");
 
-    message.textContent = "";
+    message.replaceChildren();
 
     if (!patientName || !mobile) {
         message.textContent = "Please enter your patient name and registered mobile number.";
@@ -69,6 +69,7 @@ document.getElementById("searchReportBtn").addEventListener("click", async funct
 
     this.disabled = true;
     this.textContent = "Searching...";
+
     try {
         const response = await fetch(
             "https://swvnsamzoasocqhyrunu.supabase.co/functions/v1/verify-patient-reports",
@@ -84,21 +85,47 @@ document.getElementById("searchReportBtn").addEventListener("click", async funct
 
         const data = await response.json();
 
-        if (!response.ok || !data.signedUrl) {
+        if (!response.ok || !Array.isArray(data.reports) || data.reports.length === 0) {
             message.textContent = "Report nahi mili. Patient name aur registered mobile number check karein.";
             return;
         }
 
-        message.textContent = "Report verified. Opening report...";
-       const link = document.createElement("a");
-link.href = data.signedUrl;
-link.target = "_blank";
-link.rel = "noopener noreferrer";
-link.click();
-   } catch (error) {
-    console.error("Report search error:", error);
-    message.textContent = "Error: " + error.message;
-   } finally {
+        if (data.reports.length === 1) {
+            message.textContent = "Report verified. Opening report...";
+            const link = document.createElement("a");
+            link.href = data.reports[0].signedUrl;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.click();
+            return;
+        }
+
+        const heading = document.createElement("p");
+        heading.textContent = "Multiple reports found. Select the report you need:";
+        message.appendChild(heading);
+
+        data.reports.forEach((report, index) => {
+            if (!report.signedUrl) return;
+
+            const link = document.createElement("a");
+            link.href = report.signedUrl;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = [
+                report.testName || "Lab Report",
+                report.reportDate || "",
+                report.reportNumber || `Report ${index + 1}`
+            ].filter(Boolean).join(" — ");
+
+            link.style.display = "block";
+            link.style.margin = "10px 0";
+            message.appendChild(link);
+        });
+
+    } catch (error) {
+        console.error("Report search error:", error);
+        message.textContent = "Report search mein error aaya. Please try again.";
+    } finally {
         this.disabled = false;
         this.textContent = "Search Report";
     }
