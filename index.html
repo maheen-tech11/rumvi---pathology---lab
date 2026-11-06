@@ -31,6 +31,7 @@
 
         <nav>
     <a href="#home">Home</a>
+    <a href="#offers">Special Offers</a>
     <a href="#services">Services</a>
     <a href="#about">About Us</a>
     <a href="#reports">Online Reports</a>
@@ -97,7 +98,66 @@
 <div class="section-image">
     <img src="images/lab-services.png..jpg" alt="Professional pathology laboratory">
 </div>
-<section id="services" class="section">
+
+    <!-- Special Offers Section -->
+<section id="offers" class="section offers-section">
+
+    <h2>RUMVI PATHOLOGY LAB</h2>
+
+    <p class="offers-intro">
+        Provides Special Offers to You
+    </p>
+
+    <div class="offer-categories">
+
+        <div class="offer-category" onclick="showOffers('women')">
+            <h3>Women's Health</h3>
+            <p>Explore Women's Health Packages</p>
+        </div>
+
+        <div class="offer-category" onclick="showOffers('men')">
+            <h3>Men's Health</h3>
+            <p>Explore Men's Health Packages</p>
+        </div>
+
+        <div class="offer-category" onclick="showOffers('hair')">
+            <h3>Hair Care</h3>
+            <p>Explore Hair Packages</p>
+        </div>
+
+        <div class="offer-category" onclick="showOffers('gym')">
+            <h3>Gym & Fitness</h3>
+            <p>Explore Fitness Packages</p>
+        </div>
+
+        <div class="offer-category" onclick="showOffers('skin')">
+            <h3>Skin Care</h3>
+            <p>Explore Skin Packages</p>
+        </div>
+
+        <div class="offer-category" onclick="showOffers('health')">
+            <h3>Complete Health Checkup</h3>
+            <p>Explore Health Packages</p>
+        </div>
+
+    </div>
+<div id="offerPackages" class="offer-packages"></div>
+
+<!-- Offer Photo Popup -->
+<div id="offerPopup" class="offer-popup" onclick="closeOfferPopup(event)">
+
+    <div class="offer-popup-content">
+
+        <button class="offer-close" onclick="closeOfferPopup()">
+            &times;
+        </button>
+
+        <img id="offerPopupImage" src="" alt="Special Health Offer">
+
+    </div>
+
+</div>
+</section>
     <h2>Our Services</h2>
 
     <p class="services-note">

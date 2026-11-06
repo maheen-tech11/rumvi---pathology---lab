@@ -130,3 +130,132 @@ document.getElementById("searchReportBtn").addEventListener("click", async funct
         this.textContent = "Search Report";
     }
 });
+// ==================================
+// RUMVI SPECIAL OFFERS
+// ==================================
+
+const offersData = {
+    women: [
+        { name: "Weakness Profile Female", price: "₹2,399", image: "images/offers/weakness-female.jpg" },
+        { name: "Special Female Profile Health Checkup", price: "₹3,399", image: "images/offers/special-female.jpg" },
+        { name: "PCOD AMH Profile", price: "₹3,999", image: "images/offers/pcod-amh-profile.jpg" }
+    ],
+
+    men: [
+        { name: "Weakness Profile Male", price: "₹2,399", image: "images/offers/weakness-male.jpg" },
+        { name: "Special Male Profile Health Check", price: "₹3,399", image: "images/offers/special-male.jpg" }
+    ],
+
+    hair: [
+        { name: "Hair Envest Package 2", price: "₹3,199", image: "images/offers/hair-envest-2.jpg" },
+        { name: "Hair Envest Package 1", price: "₹2,599", image: "images/offers/hair-envest-1.jpg" }
+    ],
+
+    gym: [
+        { name: "GYM – Titanium Package", price: "₹3,199", image: "images/offers/gym-titanium.jpg" }
+    ],
+
+    skin: [
+        { name: "Jaanch - Mens Skin Care Checkup", price: "₹3,699", image: "images/offers/jaanch-mens-skin-care.jpg" }
+    ],
+
+    health: [
+        { name: "Allergy Profile Package", price: "₹5,555", image: "images/offers/allergy-profile.jpg" },
+        { name: "Special Health Package", price: "₹2,399", image: "images/offers/special-health.jpg" },
+        { name: "Complete Health Test Package", price: "₹1,899", image: "images/offers/complete-health-test.jpg" },
+        { name: "Family Health Package", price: "₹3,699", image: "images/offers/family-health.jpg" },
+        { name: "Aarogyam XL Plus Package", price: "₹11,999", image: "images/offers/aarogyam-xl-plus.jpg" },
+        { name: "Cardiac Risk Markers", price: "₹6,275", image: "images/offers/cardiac-risk.jpg" },
+        { name: "Cancer Detection Profile 1", price: "₹6,000", image: "images/offers/cancer-detection.jpg" },
+        { name: "HORMONE Profile Test Package", price: "₹2,199", image: "images/offers/hormone-profile.jpg" }
+    ]
+};
+
+function showOffers(category) {
+
+    const container = document.getElementById("offerPackages");
+    const packages = offersData[category];
+
+    if (!packages || !container) return;
+
+    const categoryNames = {
+        women: "Women's Health Packages",
+        men: "Men's Health Packages",
+        hair: "Hair Care Packages",
+        gym: "Gym & Fitness Packages",
+        skin: "Skin Care Packages",
+        health: "Complete Health Packages"
+    };
+
+    container.innerHTML = `
+        <div class="offer-folder-backdrop"
+             onclick="if(event.target === this) closeOfferFolder()">
+
+            <div class="offer-folder">
+
+                <button class="folder-close"
+                        onclick="closeOfferFolder()">
+                    &times;
+                </button>
+
+                <h2>📁 ${categoryNames[category]}</h2>
+
+                <div class="offer-photo-grid">
+                    ${packages.map((item, index) => `
+                        <div class="offer-photo-card">
+
+                            ${item.image
+                                ? `<img src="${item.image}"
+                                    alt="${item.name}"
+                                    onclick="openOfferPhoto('${category}', ${index})">`
+                                : `<div class="no-offer-photo">
+                                    Photo Coming Soon
+                                   </div>`
+                            }
+
+                            <h3>${item.name}</h3>
+                            <p class="offer-price">${item.price}</p>
+
+                        </div>
+                    `).join("")}
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+function closeOfferFolder() {
+    document.getElementById("offerPackages").innerHTML = "";
+}
+function openOfferPhoto(category, index) {
+
+    const item = offersData[category][index];
+
+    if (!item || !item.image) {
+        alert("Is package ki photo available nahi hai.");
+        return;
+    }
+
+    const popup = document.getElementById("offerPopup");
+    const popupImage = document.getElementById("offerPopupImage");
+
+    popupImage.src = item.image;
+    popupImage.alt = item.name;
+
+    popup.style.display = "flex";
+}
+function closeOfferPopup(event) {
+
+    const popup = document.getElementById("offerPopup");
+    const popupImage = document.getElementById("offerPopupImage");
+
+    if (
+        !event ||
+        event.target.id === "offerPopup" ||
+        event.target.classList.contains("offer-close")
+    ) {
+        popup.style.display = "none";
+        popupImage.src = "";
+    }
+}
